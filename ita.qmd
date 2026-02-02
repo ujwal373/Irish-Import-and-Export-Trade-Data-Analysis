@@ -156,3 +156,73 @@ This alone is already **better than 80% of public trade analyses**.
 ------------------------------------------------------------------------
 
 # Phase 2:
+
+## 2.1 Aggregate total imports & exports over time
+
+```{r}
+trade_totals <- trade_top_level %>%
+  group_by(month, trade_type) %>%
+  summarise(
+    total_value = sum(value, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+## 2.2 Imports vs exports plot
+
+```{r}
+ggplot(trade_totals, aes(x = month, y = total_value, colour = trade_type)) +
+  geom_line(linewidth = 1.2) +
+  scale_colour_manual(
+    values = c("Import" = "#1F77B4", "Export" = "#FF7F0E")
+  ) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Ireland: Total Imports vs Exports Over Time",
+    subtitle = "Monthly trade values (Euro Thousand), top-level commodities",
+    x = NULL,
+    y = "Trade Value (Euro Thousand)",
+    colour = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12),
+    legend.position = "top",
+    panel.grid.minor = element_blank()
+  )
+```
+
+## 2.3 Trade balance calculation (Exports − Imports)
+
+```{r}
+trade_balance <- trade_totals %>%
+  pivot_wider(
+    names_from = trade_type,
+    values_from = total_value
+  ) %>%
+  mutate(
+    trade_balance = Export - Import
+  )
+```
+
+## 2.4 Trade balance plot
+
+```{r}
+ggplot(trade_balance, aes(x = month, y = trade_balance)) +
+  geom_hline(yintercept = 0, colour = "grey50", linewidth = 0.6) +
+  geom_line(colour = "#2CA02C", linewidth = 1) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Ireland: Trade Balance Over Time",
+    subtitle = "Exports minus Imports (Euro Thousand)",
+    x = NULL,
+    y = "Trade Balance"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12),
+    panel.grid.minor = element_blank()
+  )
+```

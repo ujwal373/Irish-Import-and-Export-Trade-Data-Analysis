@@ -24,3 +24,80 @@ execute:
   warning: false
 editor: visual
 ---
+
+## Setup chunk (libraries + options)
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(stringr)
+```
+
+## Load & Clean Data
+
+```{r}
+trade_raw <- read_csv("raw.csv")
+#glimpse(trade_raw)
+```
+
+At this point, our columns are:
+
+-   `Statistic Label`
+-   `Month`
+-   `Commodity Group`
+-   `UNIT`
+-   `VALUE`
+
+We’ll **never modify `trade_raw` directly** again.
+
+## Clean and standardise variables
+
+```{r}
+trade_clean <- trade_raw %>%
+  rename(
+    statistic = `Statistic Label`,
+    month_raw = Month,
+    commodity_raw = `Commodity Group`,
+    unit = UNIT,
+    value = VALUE
+  ) %>%
+  mutate(
+    trade_type = case_when(
+      str_detect(statistic, "Imports") ~ "Import",
+      str_detect(statistic, "Exports") ~ "Export"
+    ),
+    month = as.Date(paste0("01 ", month_raw), format = "%d %Y %B"),
+    year = lubridate::year(month),
+    commodity_code = str_extract(commodity_raw, "\\(([^)]+)\\)") %>%
+      str_remove_all("[()]"),
+    commodity_desc = str_remove(commodity_raw, "\\s*\\([^)]*\\)"),
+    hierarchy_level = if_else(
+      nchar(commodity_code) == 1,
+      "top",
+      "detail"
+    )
+  ) %>%
+  select(
+    trade_type,
+    month,
+    year,
+    commodity_code,
+    commodity_desc,
+    hierarchy_level,
+    value
+  )
+```
+
+What this restructuring block does (important)
+
+-   Converts `"1972 January"` → real `Date`
+
+-   Separates **Import vs Export**
+
+-   Extracts: - `commodity_code` → `0`, `01`, `54`, etc.
+
+-   `commodity_desc` → clean names
+
+-   Tags hierarchy explicitly (`top` vs `detail`)
+
+This is **correct handling** of SITC-style data.

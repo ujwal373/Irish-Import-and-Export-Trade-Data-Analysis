@@ -260,3 +260,37 @@ ggplot(trade_annual, aes(x = year, y = total_value, colour = trade_type)) +
     panel.grid.minor = element_blank()
   )
 ```
+
+# Phase 3:
+
+## 3.1 Top export commodity groups over time
+
+```{r}
+exports_by_sector <- trade_top_level %>%
+  filter(trade_type == "Export") %>%
+  group_by(year, commodity_desc) %>%
+  summarise(
+    export_value = sum(value, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+```{r}
+ggplot(exports_by_sector, 
+       aes(x = year, y = export_value, colour = commodity_desc)) +
+  geom_line(linewidth = 1.1) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Ireland Exports by Commodity Group",
+    subtitle = "Top-level sectors, annual values",
+    x = "Year",
+    y = "Export Value (Euro Thousand)",
+    colour = "Commodity Group"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    legend.position = "right",
+    panel.grid.minor = element_blank()
+  )
+```

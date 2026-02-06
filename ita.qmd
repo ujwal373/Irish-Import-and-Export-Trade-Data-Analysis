@@ -294,3 +294,102 @@ ggplot(exports_by_sector,
     panel.grid.minor = element_blank()
   )
 ```
+
+## 3.2 Sector contribution share
+
+```{r}
+export_shares <- exports_by_sector %>%
+  group_by(year) %>%
+  mutate(
+    total_exports = sum(export_value),
+    share = export_value / total_exports
+  ) %>%
+  ungroup()
+```
+
+```{r}
+ggplot(export_shares,
+       aes(x = year, y = share, fill = commodity_desc)) +
+  geom_area() +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Sector Contribution to Irish Exports",
+    subtitle = "Share of total exports by commodity group",
+    x = "Year",
+    y = "Share of Exports",
+    fill = "Commodity Group"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    panel.grid.minor = element_blank(),
+    legend.position = "right"
+  )
+```
+
+## 3.3 Volatility comparison across sectors
+
+```{r}
+export_volatility <- exports_by_sector %>%
+  group_by(commodity_desc) %>%
+  summarise(
+    mean_exports = mean(export_value),
+    sd_exports = sd(export_value),
+    cv = sd_exports / mean_exports,
+    .groups = "drop"
+  )
+```
+
+```{r}
+ggplot(export_volatility,
+       aes(x = reorder(commodity_desc, cv), y = cv)) +
+  geom_col(fill = "#1F77B4") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Export Volatility by Sector",
+    subtitle = "Coefficient of variation across years",
+    x = NULL,
+    y = "Relative Volatility"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## 3.4 Crisis Analysis (2008 vs COVID)
+
+```{r}
+exports_crisis <- exports_by_sector %>%
+  mutate(
+    period = case_when(
+      year %in% 2008:2009 ~ "Financial Crisis",
+      year %in% 2020:2021 ~ "COVID Shock",
+      TRUE ~ "Normal"
+    )
+  ) %>%
+  filter(period != "Normal")
+```
+
+```{r}
+ggplot(exports_crisis,
+       aes(x = year, y = export_value, colour = commodity_desc)) +
+  geom_line(linewidth = 1.1) +
+  facet_wrap(~ period, scales = "free_y") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Export Sector Behaviour During Crises",
+    subtitle = "Financial Crisis vs COVID",
+    x = "Year",
+    y = "Export Value",
+    colour = "Commodity Group"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    panel.grid.minor = element_blank(),
+    legend.position = "right"
+  )
+```

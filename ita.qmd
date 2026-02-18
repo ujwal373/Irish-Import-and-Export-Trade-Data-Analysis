@@ -415,3 +415,36 @@ exports_regime <- exports_by_sector %>%
     brexit_regime = if_else(year < 2016, "Pre-Brexit", "Post-Brexit")
   )
 ```
+
+Compare average exports
+
+```{r}
+regime_summary <- exports_regime %>%
+  group_by(euro_regime, commodity_desc) %>%
+  summarise(
+    avg_exports = mean(export_value),
+    .groups = "drop"
+  )
+```
+
+```{r}
+ggplot(regime_summary,
+       aes(x = reorder(commodity_desc, avg_exports),
+           y = avg_exports,
+           fill = euro_regime)) +
+  geom_col(position = "dodge") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Average Exports: Pre vs Post Euro",
+    x = NULL,
+    y = "Average Export Value"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    panel.grid.minor = element_blank()
+  )
+```
+
+## 4.2 Rolling Growth Rates

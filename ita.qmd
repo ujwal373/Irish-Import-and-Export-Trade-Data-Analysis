@@ -448,3 +448,41 @@ ggplot(regime_summary,
 ```
 
 ## 4.2 Rolling Growth Rates
+
+We compute 3-year rolling growth
+
+```{r}
+library(slider)
+
+exports_growth <- exports_by_sector %>%
+  arrange(commodity_desc, year) %>%
+  group_by(commodity_desc) %>%
+  mutate(
+    rolling_growth = (export_value /
+      lag(export_value, 3)) - 1
+  ) %>%
+  ungroup()
+
+```
+
+```{r}
+ggplot(exports_growth,
+       aes(x = year, y = rolling_growth,
+           colour = commodity_desc)) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "3-Year Rolling Export Growth by Sector",
+    x = "Year",
+    y = "Rolling Growth Rate"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    panel.grid.minor = element_blank(),
+    legend.position = "right"
+  )
+
+```
+
+## 4.3 Concentration Risk (Herfindahl Index)

@@ -395,3 +395,23 @@ ggplot(exports_crisis,
 ```
 
 # Phase 4:
+
+## 4.1 Regime Analysis
+
+Let’s define economic regimes:
+
+-    Pre-Euro: before 1999
+
+-    Post-Euro: 1999 onward
+
+-    Pre-Brexit: before 2016
+
+-    Post-Brexit: 2016 onward
+
+```{r}
+exports_regime <- exports_by_sector %>%
+  mutate(
+    euro_regime = if_else(year < 1999, "Pre-Euro", "Post-Euro"),
+    brexit_regime = if_else(year < 2016, "Pre-Brexit", "Post-Brexit")
+  )
+```

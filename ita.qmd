@@ -170,7 +170,7 @@ trade_totals <- trade_top_level %>%
 
 ## 2.2 Imports vs exports plot
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(trade_totals, aes(x = month, y = total_value, colour = trade_type)) +
   geom_line(linewidth = 1.2) +
   scale_colour_manual(
@@ -208,7 +208,7 @@ trade_balance <- trade_totals %>%
 
 ## 2.4 Trade balance plot
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(trade_balance, aes(x = month, y = trade_balance)) +
   geom_hline(yintercept = 0, colour = "grey50", linewidth = 0.6) +
   geom_line(colour = "#2CA02C", linewidth = 1) +
@@ -238,7 +238,7 @@ trade_annual <- trade_top_level %>%
   )
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(trade_annual, aes(x = year, y = total_value, colour = trade_type)) +
   geom_line(linewidth = 1.3) +
   geom_point(size = 2) +
@@ -275,7 +275,7 @@ exports_by_sector <- trade_top_level %>%
   )
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(exports_by_sector, 
        aes(x = year, y = export_value, colour = commodity_desc)) +
   geom_line(linewidth = 1.1) +
@@ -307,7 +307,7 @@ export_shares <- exports_by_sector %>%
   ungroup()
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(export_shares,
        aes(x = year, y = share, fill = commodity_desc)) +
   geom_area() +
@@ -340,7 +340,7 @@ export_volatility <- exports_by_sector %>%
   )
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(export_volatility,
        aes(x = reorder(commodity_desc, cv), y = cv)) +
   geom_col(fill = "#1F77B4") +
@@ -373,7 +373,7 @@ exports_crisis <- exports_by_sector %>%
   filter(period != "Normal")
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(exports_crisis,
        aes(x = year, y = export_value, colour = commodity_desc)) +
   geom_line(linewidth = 1.1) +
@@ -400,13 +400,13 @@ ggplot(exports_crisis,
 
 Let’s define economic regimes:
 
--    Pre-Euro: before 1999
+-   Pre-Euro: before 1999
 
--    Post-Euro: 1999 onward
+-   Post-Euro: 1999 onward
 
--    Pre-Brexit: before 2016
+-   Pre-Brexit: before 2016
 
--    Post-Brexit: 2016 onward
+-   Post-Brexit: 2016 onward
 
 ```{r}
 exports_regime <- exports_by_sector %>%
@@ -427,7 +427,7 @@ regime_summary <- exports_regime %>%
   )
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(regime_summary,
        aes(x = reorder(commodity_desc, avg_exports),
            y = avg_exports,
@@ -465,7 +465,7 @@ exports_growth <- exports_by_sector %>%
 
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(exports_growth,
        aes(x = year, y = rolling_growth,
            colour = commodity_desc)) +
@@ -500,7 +500,7 @@ hhi_data <- export_shares %>%
   )
 ```
 
-```{r}
+```{r fig.width= 10, fig.height=4}
 ggplot(hhi_data, aes(x = year, y = hhi)) +
   geom_line(colour = "#D62728", linewidth = 1.3) +
   scale_y_continuous(labels = scales::number_format(accuracy = 0.01)) +

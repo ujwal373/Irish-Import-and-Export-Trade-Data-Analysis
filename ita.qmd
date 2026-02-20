@@ -373,7 +373,7 @@ exports_crisis <- exports_by_sector %>%
   filter(period != "Normal")
 ```
 
-```{r fig.width= 10, fig.height=4}
+```{r fig.width= 10, fig.height=6}
 ggplot(exports_crisis,
        aes(x = year, y = export_value, colour = commodity_desc)) +
   geom_line(linewidth = 1.1) +
